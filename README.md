@@ -11,6 +11,6 @@ Find your chat ID by inviting @RawDataBot to your channel.
 Add TOKEN and CHAT_ID
 
 # Build Docker image and run Container
-`docker build --tag schtock:1.0`
+`docker build --tag schtock:1.0 .`
 
 `docker run -d --restart unless-stopped schtock:1.0`
