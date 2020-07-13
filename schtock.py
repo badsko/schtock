@@ -11,8 +11,8 @@ a = 100
 inc = 'TSLA is now at ${}. Up ${} from closing at ${}.'
 dcr = 'TSLA is now at ${}. Down ${} from closing at ${}.'
 date = datetime.today().isoweekday() < 6
-tt = datetime.now().strftime('%H:%M') > '15:30' and\
-datetime.now().strftime('%H:%M') < '22:00'
+tt = datetime.now().strftime('%H:%M') > '11:30' and\
+datetime.now().strftime('%H:%M') < '20:00'
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
@@ -20,8 +20,7 @@ TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 def parsePrice():
     r=requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
     soup=bs4.BeautifulSoup(r.text,"lxml")
-    price=soup.find('div',{'class':'My(6px) Pos(r) smartphone_Mt(6px)'})\
-    .find('span').text.replace(",","")
+    price=soup.find('div',{'class':'My(6px) Pos(r) smartphone_Mt(6px)'}).find('span').text.replace(',','')
     return price
 
 def closePrice():
