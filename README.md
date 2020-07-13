@@ -1,9 +1,12 @@
-Tracking prices of stock and sending alert to Telegram.
+Tracking prices of stock and sending alert to Telegram when the price is up or down x amount.
 
-# Running the script
+# Create a Telegram bot with BotFather
+https://core.telegram.org/bots
+
+# Modify .env
 Add TOKEN and CHAT_ID to .env
 
-# Start :
+# Build Docker image and run schtock.py detached
 `docker build --tag schtock:1.0`
 
 `docker run -d --restart unless-stopped schtock:1.0`
