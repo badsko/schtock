@@ -37,14 +37,14 @@ while True:
     close = closePrice()
     
     if tt and date:
-        if (float(close) + a) >= float(current):
+        if (float(close) + a) <= float(current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
                 inc.format(current, a, close)}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
                 time.sleep(28800)
-        elif (float(close) - a) <= float(current):
+        elif (float(close) - a) >= float(current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
                 dcr.format(current, a, close)}
