@@ -27,8 +27,8 @@ def parsePrice():
 def closePrice():
     r=requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
     soup=bs4.BeautifulSoup(r.text,"lxml")
-    price=soup.find('td',{'class':'Ta(end) Fw(600) Lh(14px)'})\
-    .find('span').text.replace(",","")
+    price=soup.find('td',{'data-test':'PREV_CLOSE-value'}).find('span')\
+    .text.replace(",","")
     return price
 
 while True:
