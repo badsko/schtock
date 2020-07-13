@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 a = 100
-text = 10
+inc = 'TSLA is now at ${}. Up ${} from closing at ${}.'
+dcr = 'TSLA is now at ${}. Down ${} from closing at ${}.'
 date = datetime.today().isoweekday() < 6
 tt = datetime.now().strftime('%H:%M') > '15:30' and\
 datetime.now().strftime('%H:%M') < '22:00'
@@ -38,17 +39,15 @@ while True:
     if tt and date:
         if (float(close) + a) <= float(current):
             if not message_sent:
-                text = (f'TSLA is now at ${current}. Up more than ${a} ' +
-                f'from closing at ${close}.')
-                payload = {'chat_id': CHAT_ID, 'text': text}
+                payload = {'chat_id': CHAT_ID, 'text':\
+                inc.format(current, a, close)}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
                 time.sleep(28800)
         elif (float(close) - a) >= float(current):
             if not message_sent:
-                text = (f'TSLA is now at ${current}. Down more than ${a} ' +
-                f'from closing at ${close}.')
-                payload = {'chat_id': CHAT_ID, 'text': text}
+                payload = {'chat_id': CHAT_ID, 'text':\
+                dcr.format(current, a, close)}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
                 time.sleep(28800)
