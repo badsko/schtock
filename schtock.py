@@ -11,7 +11,7 @@ a = 100
 inc = 'TSLA is now at ${}. Up ${} from closing at ${}.'
 dcr = 'TSLA is now at ${}. Down ${} from closing at ${}.'
 date = datetime.today().isoweekday() < 6
-tt = datetime.now().strftime('%H:%M') > '11:30' and\
+tt = datetime.now().strftime('%H:%M') > '13:30' and\
 datetime.now().strftime('%H:%M') < '20:00'
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
@@ -19,15 +19,16 @@ TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
 def parsePrice():
     r=requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
-    soup=bs4.BeautifulSoup(r.text,"lxml")
-    price=soup.find('div',{'class':'My(6px) Pos(r) smartphone_Mt(6px)'}).find('span').text.replace(',','')
+    soup=bs4.BeautifulSoup(r.text,'lxml')
+    cls = 'My(6px) Pos(r) smartphone_Mt(6px)'
+    price=soup.find('div',{'class': cls}).find('span').text.replace(',','')
     return price
 
 def closePrice():
     r=requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
-    soup=bs4.BeautifulSoup(r.text,"lxml")
-    price=soup.find('td',{'data-test':'PREV_CLOSE-value'}).find('span')\
-    .text.replace(",","")
+    soup=bs4.BeautifulSoup(r.text,'lxml')
+    cls = 'PREV_CLOSE-value'
+    price=soup.find('td',{'data-test': cls}).find('span').text.replace(',','')
     return price
 
 while True:
@@ -36,14 +37,14 @@ while True:
     close = closePrice()
     
     if tt and date:
-        if (float(close) + a) <= float(current):
+        if (float(close) + a) >= float(current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
                 inc.format(current, a, close)}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
                 time.sleep(28800)
-        elif (float(close) - a) >= float(current):
+        elif (float(close) - a) <= float(current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
                 dcr.format(current, a, close)}
@@ -51,5 +52,5 @@ while True:
                 message_sent = True
                 time.sleep(28800)
     else:
-        print (datetime.now().strftime("%H:%M"))
+        print (datetime.now().strftime('%H:%M'))
         time.sleep(15)
