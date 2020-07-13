@@ -1,9 +1,11 @@
-Tracking prices of stock and sending alert to Telegram when the price is up or down x amount.
+Live tracking stock price and sending alert to Telegram when the price is up or down.
 
 # Create a Telegram bot with BotFather
 [https://core.telegram.org/bots](https://core.telegram.org/bots)
 
-Find your Token and chat id.
+Grab your Token from BotFather.
+
+Find your chat ID by inviting @RawDataBot to your channel.
 
 # Modify .env
 Add TOKEN and CHAT_ID
