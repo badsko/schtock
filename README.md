@@ -1,4 +1,4 @@
-Live tracking stock price and sending alert to Telegram when the price is up or down.
+Scraper for tracking stock price and sending alert to Telegram when the price is up or down by a set amount.
 
 # Create a Telegram Bot With BotFather
 [https://core.telegram.org/bots](https://core.telegram.org/bots)

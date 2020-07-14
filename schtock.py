@@ -8,56 +8,61 @@ from dotenv import load_dotenv
 
 load_dotenv()
 a = 100
-price = 1
-inc = 'TSLA is now at ${}. Up ${} from closing at ${}.'
-dcr = 'TSLA is now at ${}. Down ${} from closing at ${}.'
-date = datetime.today().isoweekday() < 6
-tt = datetime.now().strftime('%H:%M') > '13:30' and\
-datetime.now().strftime('%H:%M') < '20:00'
+p = 1
+url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
+inc = 'TSLA increased by `${}` from low `${}` now trading at `${}`'
+dcr = 'TSLA decreased by `${}` from high `${}` now trading at `${}` Buy?'
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
-def parsePrice():
-    r = requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
+def currentPrice():
+    r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
-    cls = 'My(6px) Pos(r) smartphone_Mt(6px)'
-    try:
-        price = soup.find('div',{'class': cls}).find('span').text.replace(',','')
-    except AttributeError:
-        print('An error occured')
-    return price
+    c = 'pushBox roundCorners3'
+    p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.')
+    return p
 
-def closePrice():
-    r=requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
+def highPrice():
+    r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
-    cls = 'PREV_CLOSE-value'
-    try:
-        price = soup.find('td',{'data-test': cls}).find('span').text.replace(',','')
-    except AttributeError:
-        print('An error occured')
-    return price
+    c = 'highestPrice SText bold'
+    p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.')
+    return p
+
+def lowPrice():
+    r = requests.get(url)
+    soup = bs4.BeautifulSoup(r.text,'lxml')
+    c = 'lowestPrice SText bold'
+    p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.')
+    return p
 
 while True:
     message_sent = False
-    current = +float(parsePrice())
-    close = +float(closePrice())
+    date = datetime.today().isoweekday() < 6
+    tt = datetime.now().strftime('%H:%M') > '13:30' and\
+    datetime.now().strftime('%H:%M') < '20:00'
+
+    current = +float(currentPrice())
+    high = +float(highPrice())
+    low = +float(lowPrice())
     
     if tt and date:
-        if ((close) + a) <= (current):
+        if ((low) + a) <= (current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
-                inc.format(current, a, close)}
+                inc.format(a, low, current), 'parse_mode': 'markdown'}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
-                time.sleep(5400)
-        elif ((close) - a) >= (current):
+                time.sleep(60*90)
+        elif ((high) - a) >= (current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
-                dcr.format(current, a, close)}
+                dcr.format(a, high, current), 'parse_mode': 'markdown'}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
-                time.sleep(5400)
+                time.sleep(60*90)
+
     else:
         print (datetime.now().strftime('%H:%M'))
-        time.sleep(2)
+        time.sleep(60*5)
