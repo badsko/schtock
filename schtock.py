@@ -20,15 +20,21 @@ TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 def parsePrice():
     r=requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
     soup=bs4.BeautifulSoup(r.text,'lxml')
-    cls = 'My(6px) Pos(r) smartphone_Mt(6px)'
-    price=soup.find('div',{'class': cls}).find('span').text.replace(',','')
+    cls='My(6px) Pos(r) smartphone_Mt(6px)'
+    try:
+        price=soup.find('div',{'class': cls}).find('span').text.replace(',','')
+    except AttributeError:
+        print('An error occured')
     return price
 
 def closePrice():
     r=requests.get('https://finance.yahoo.com/quote/TSLA?p=TSLA')
     soup=bs4.BeautifulSoup(r.text,'lxml')
-    cls = 'PREV_CLOSE-value'
-    price=soup.find('td',{'data-test': cls}).find('span').text.replace(',','')
+    cls='PREV_CLOSE-value'
+    try:
+        price=soup.find('td',{'data-test': cls}).find('span').text.replace(',','')
+    except AttributeError:
+        print('An error occured')
     return price
 
 while True:
@@ -53,4 +59,4 @@ while True:
                 time.sleep(5400)
     else:
         print (datetime.now().strftime('%H:%M'))
-        time.sleep(60*15)
+        time.sleep(60)
