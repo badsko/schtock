@@ -53,4 +53,4 @@ while True:
                 time.sleep(5400)
     else:
         print (datetime.now().strftime('%H:%M'))
-        time.sleep(15)
+        time.sleep(60*15)
