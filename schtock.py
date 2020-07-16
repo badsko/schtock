@@ -1,4 +1,4 @@
-import bs4
+mport bs4
 import requests
 import os
 import time
@@ -10,44 +10,49 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 a = 100
+p = 1
 poll_time = 60*5
 sleep_time = 60*55
+remove_character = ['\xa0', '-']
 url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
 inc = 'TSLA is now at `${}` Up `${}` from low point of `${}` today.'
 dcr = 'TSLA is now at `${}` Down `${}` from high point of `${}` today.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
 def currentPrice():
-    p = 1
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'pushBox roundCorners3'
     try:
-        p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+        p = soup.find('span',{'class': c}).text
     except AttributeError:
         print (datetime.now().strftime('%H:%M'), ' An error occured.')
+    for character in remove_character:
+        p = p.replace(',', '.').replace(character, '')
     return p
 
 def highPrice():
-    p = 1
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'highestPrice SText bold'
     try:
-        p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+        p = soup.find('span',{'class': c}).text
     except AttributeError:
         print (datetime.now().strftime('%H:%M'), ' An error occured.')
+    for character in remove_character:
+        p = p.replace(',', '.').replace(character, '')
     return p
 
 def lowPrice():
-    p = 1
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'lowestPrice SText bold'
     try:
-        p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+        p = soup.find('span',{'class': c}).text
     except AttributeError:
         print (datetime.now().strftime('%H:%M'), ' An error occured.')
+    for character in remove_character:
+        p = p.replace(',', '.').replace(character, '')
     return p
 
 while True:
