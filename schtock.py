@@ -65,14 +65,14 @@ while True:
                 inc.format(current, a, low), 'parse_mode': 'markdown'}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
-                time.sleep(60*90)
+                time.sleep(60*55)
         elif ((high) - a) >= (current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
                 dcr.format(current, a, high), 'parse_mode': 'markdown'}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
-                time.sleep(60*90)
+                time.sleep(60*55)
         else:
             print (datetime.now().strftime('%H:%M'))
             time.sleep(60*5)
