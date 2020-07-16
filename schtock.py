@@ -20,21 +20,30 @@ def currentPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'pushBox roundCorners3'
-    p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+    try:
+        p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+    except AttributeError:
+        print (datetime.now().strftime('%H:%M'), ' An error occured.')
     return p
 
 def highPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'highestPrice SText bold'
-    p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+    try:
+        p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+    except AttributeError:
+        print (datetime.now().strftime('%H:%M'), ' An error occured.')
     return p
 
 def lowPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'lowestPrice SText bold'
-    p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+    try:
+        p = soup.find('span',{'class': c}).text.replace('\xa0','').replace(',','.').replace('-','')
+    except AttributeError:
+        print (datetime.now().strftime('%H:%M'), ' An error occured.')
     return p
 
 while True:
@@ -56,14 +65,17 @@ while True:
                 inc.format(current, a, low), 'parse_mode': 'markdown'}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
-                time.sleep(60*55)
+                time.sleep(60*90)
         elif ((high) - a) >= (current):
             if not message_sent:
                 payload = {'chat_id': CHAT_ID, 'text':\
                 dcr.format(current, a, high), 'parse_mode': 'markdown'}
                 r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                 message_sent = True
-                time.sleep(60*55)
+                time.sleep(60*90)
         else:
             print (datetime.now().strftime('%H:%M'))
             time.sleep(60*5)
+    else:
+        print (datetime.now().strftime('%H:%M'))
+        time.sleep(60*5)
