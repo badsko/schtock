@@ -12,7 +12,7 @@ CHAT_ID = os.getenv('CHAT_ID')
 a = 100
 p = 1
 poll_time = 60*5
-sleep_time = 60*55
+sleep_time = 60*75
 remove_character = ['\xa0', '-']
 url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
 inc = 'TSLA is now at `${}` Up `${}` from low point of `${}` today.'
@@ -60,7 +60,7 @@ while True:
         continue
     
     if tt and date:
-        if low is not None:
+        if low is not None and high is not None:
             if ((low) + a) <= (current):
                 if not message_sent:
                     payload = {'chat_id': CHAT_ID, 'text':\
@@ -68,17 +68,16 @@ while True:
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     time.sleep(sleep_time)
-        elif ((high) - a) >= (current):
-            if high is not None:
+            elif ((high) - a) >= (current):
                 if not message_sent:
                     payload = {'chat_id': CHAT_ID, 'text':\
                     dcr.format(current, a, high), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     time.sleep(sleep_time)
-        else:
-            print (datetime.now().strftime('%H:%M'))
-            time.sleep(poll_time)
+            else:
+                print (datetime.now().strftime('%H:%M'))
+                time.sleep(poll_time)
     else:
         print (datetime.now().strftime('%H:%M'))
         time.sleep(poll_time)
