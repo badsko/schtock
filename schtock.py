@@ -23,10 +23,7 @@ def currentPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'pushBox roundCorners3'
-    try:
-        p = soup.find('span',{'class': c}).text
-    except AttributeError:
-        print (datetime.now().strftime('%H:%M'), ' An error occured.')
+    p = soup.find('span',{'class': c}).text
     for character in remove_character:
         p = p.replace(',', '.').replace(character, '')
     return p
@@ -35,10 +32,7 @@ def highPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'highestPrice SText bold'
-    try:
-        p = soup.find('span',{'class': c}).text
-    except AttributeError:
-        print (datetime.now().strftime('%H:%M'), ' An error occured.')
+    p = soup.find('span',{'class': c}).text
     for character in remove_character:
         p = p.replace(',', '.').replace(character, '')
     return p
@@ -47,10 +41,7 @@ def lowPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     c = 'lowestPrice SText bold'
-    try:
-        p = soup.find('span',{'class': c}).text
-    except AttributeError:
-        print (datetime.now().strftime('%H:%M'), ' An error occured.')
+    p = soup.find('span',{'class': c}).text
     for character in remove_character:
         p = p.replace(',', '.').replace(character, '')
     return p
@@ -66,22 +57,25 @@ while True:
         low = +float(lowPrice())
     except ValueError:
         print (datetime.now().strftime('%H:%M'), ' An error occured.')
+        continue
     
     if tt and date:
-        if ((low) + a) <= (current):
-            if not message_sent:
-                payload = {'chat_id': CHAT_ID, 'text':\
-                inc.format(current, a, low), 'parse_mode': 'markdown'}
-                r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
-                message_sent = True
-                time.sleep(sleep_time)
+        if low is not None:
+            if ((low) + a) <= (current):
+                if not message_sent:
+                    payload = {'chat_id': CHAT_ID, 'text':\
+                    inc.format(current, a, low), 'parse_mode': 'markdown'}
+                    r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
+                    message_sent = True
+                    time.sleep(sleep_time)
         elif ((high) - a) >= (current):
-            if not message_sent:
-                payload = {'chat_id': CHAT_ID, 'text':\
-                dcr.format(current, a, high), 'parse_mode': 'markdown'}
-                r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
-                message_sent = True
-                time.sleep(sleep_time)
+            if high is not None:
+                if not message_sent:
+                    payload = {'chat_id': CHAT_ID, 'text':\
+                    dcr.format(current, a, high), 'parse_mode': 'markdown'}
+                    r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
+                    message_sent = True
+                    time.sleep(sleep_time)
         else:
             print (datetime.now().strftime('%H:%M'))
             time.sleep(poll_time)
