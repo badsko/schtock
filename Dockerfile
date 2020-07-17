@@ -4,4 +4,4 @@ COPY schtock.py requirements.txt .env /
 
 RUN pip3 install -r requirements.txt
 
-CMD [ "python", "./schtock.py" ]
+CMD [ "python", "-u", "./schtock.py" ]
