@@ -27,7 +27,10 @@ def currentPrice():
     p = soup.find('span',{'class': c}).text
     for character in remove_character:
         p = p.replace(',', '.').replace(character, '')
-    return p
+    if p == '':
+        return
+    else:
+        return p
 
 def highPrice():
     r = requests.get(url)
@@ -36,7 +39,10 @@ def highPrice():
     p = soup.find('span',{'class': c}).text
     for character in remove_character:
         p = p.replace(',', '.').replace(character, '')
-    return p
+    if p == '':
+        return
+    else:
+        return p
 
 def lowPrice():
     r = requests.get(url)
@@ -45,7 +51,10 @@ def lowPrice():
     p = soup.find('span',{'class': c}).text
     for character in remove_character:
         p = p.replace(',', '.').replace(character, '')
-    return p
+    if p == '':
+        return
+    else:
+        return p
 
 while True:
     message_sent = False
@@ -53,14 +62,16 @@ while True:
     date = datetime.today().isoweekday() < 6
     tt = datetime.now().strftime('%H:%M') > '13:30' and\
     datetime.now().strftime('%H:%M') < '20:00'
-    try:
-        current = +float(currentPrice())
+    current = +float(currentPrice())
+    high = highPrice()
+    low = lowPrice()
+    if high is not None:
         high = +float(highPrice())
         low = +float(lowPrice())
-    except ValueError:
-        print (stamp, '- An error occured.')
-        continue
-    
+    elif high is None:
+        print (stamp, '- Value returned None. Pausing', pmin, 'min.')
+        time.sleep(sleep_time)
+
     if tt and date:
         if low is not None and high is not None:
             if ((low) + a) <= (current):
