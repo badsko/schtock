@@ -89,7 +89,7 @@ while True:
             elif ((high) - a) >= (current):
                 if not message_sent:
                     current = '{:g}'.format(current)
-                    low = '{:g}'.format(low)
+                    high = '{:g}'.format(high)
                     payload = {'chat_id': CHAT_ID, 'text':\
                     dcr.format(current, pdcr, high), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
