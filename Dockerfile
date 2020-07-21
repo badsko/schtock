@@ -6,4 +6,4 @@ RUN apt-get -y upgrade
 RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
-CMD [ 'python', '-u', './schtock.py' ]
+CMD [ "python", "-u", "./schtock.py" ]
