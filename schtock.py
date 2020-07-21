@@ -14,6 +14,7 @@ p = 1
 poll_time = 60*5
 sleep_time = 60*75
 pmin = poll_time//60
+smin = sleep_time//60
 remove_character = ['\xa0', '-']
 url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
 inc = 'TSLA at `${}`. Increased `{}` from low point of `${}` today.'
@@ -72,7 +73,7 @@ while True:
         pdcr = '{:.2%}'.format((current-high)/current)
     elif high is None:
         print (stamp, '- Value returned None. Pausing', pmin, 'min.')
-        time.sleep(sleep_time)
+        time.sleep(poll_time)
 
     if tt and date:
         if low is not None and high is not None:
@@ -84,7 +85,7 @@ while True:
                     inc.format(current, pinc, low), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
-                    print (stamp, '- Increased. Pausing', pmin, 'min.')
+                    print (stamp, '- Increased. Pausing', smin, 'min.')
                     time.sleep(sleep_time)
             elif ((high) - a) >= (current):
                 if not message_sent:
@@ -93,7 +94,7 @@ while True:
                     payload = {'chat_id': CHAT_ID, 'text':\
                     dcr.format(current, pdcr, high), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
-                    print (stamp, '- Decreased. Pausing', pmin, 'min.')
+                    print (stamp, '- Decreased. Pausing', smin, 'min.')
                     message_sent = True
                     time.sleep(sleep_time)
             else:
