@@ -16,8 +16,8 @@ sleep_time = 60*75
 pmin = poll_time//60
 remove_character = ['\xa0', '-']
 url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
-inc = 'TSLA at `${}` Increased `{}` from low point of `${}` today.'
-dcr = 'TSLA at `${}` Decreased `{}` from high point of `${}` today.'
+inc = 'TSLA at `${}`. Increased `{}` from low point of `${}` today.'
+dcr = 'TSLA at `${}`. Decreased `{}` from high point of `${}` today.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
 def currentPrice():
@@ -68,8 +68,8 @@ while True:
     if high is not None:
         high = +float(high)
         low = +float(low)
-        pinc = '{:.1%}'.format((current-low)/current)
-        pdcr = '{:.1%}'.format((current-high)/current)
+        pinc = '{:.2%}'.format((current-low)/current)
+        pdcr = '{:.2%}'.format((current-high)/current)
     elif high is None:
         print (stamp, '- Value returned None. Pausing', pmin, 'min.')
         time.sleep(sleep_time)
