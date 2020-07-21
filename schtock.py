@@ -16,8 +16,8 @@ sleep_time = 60*75
 pmin = poll_time//60
 remove_character = ['\xa0', '-']
 url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
-inc = 'TSLA is now at `${}` Up `${}` from low point of `${}` today.'
-dcr = 'TSLA is now at `${}` Down `${}` from high point of `${}` today.'
+inc = 'TSLA at `${}` Increased `{}` from low point of `${}` today.'
+dcr = 'TSLA at `${}` Decreased `{}` from high point of `${}` today.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 
 def currentPrice():
@@ -60,14 +60,16 @@ while True:
     message_sent = False
     stamp = datetime.now().strftime('%H:%M')
     date = datetime.today().isoweekday() < 6
-    tt = datetime.now().strftime('%H:%M') > '13:30' and\
-    datetime.now().strftime('%H:%M') < '20:00'
+    tt = stamp > '13:30' and stamp < '20:00'
     current = +float(currentPrice())
     high = highPrice()
     low = lowPrice()
+
     if high is not None:
-        high = +float(highPrice())
-        low = +float(lowPrice())
+        high = +float(high)
+        low = +float(low)
+        pinc = '{:.1%}'.format((current-low)/current)
+        pdcr = '{:.1%}'.format((current-high)/current)
     elif high is None:
         print (stamp, '- Value returned None. Pausing', pmin, 'min.')
         time.sleep(sleep_time)
@@ -76,16 +78,20 @@ while True:
         if low is not None and high is not None:
             if ((low) + a) <= (current):
                 if not message_sent:
+                    current = '{:g}'.format(current)
+                    low = '{:g}'.format(low)
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    inc.format(current, a, low), 'parse_mode': 'markdown'}
+                    inc.format(current, pinc, low), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     print (stamp, '- Increased. Pausing', pmin, 'min.')
                     time.sleep(sleep_time)
             elif ((high) - a) >= (current):
                 if not message_sent:
+                    current = '{:g}'.format(current)
+                    low = '{:g}'.format(low)
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    dcr.format(current, a, high), 'parse_mode': 'markdown'}
+                    dcr.format(current, pdcr, high), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     print (stamp, '- Decreased. Pausing', pmin, 'min.')
                     message_sent = True
