@@ -62,13 +62,13 @@ while True:
     stamp = datetime.now().strftime('%H:%M')
     date = datetime.today().isoweekday() < 6
     tt = stamp > '13:30' and stamp < '20:00'
-    current = +float(currentPrice())
+    current = float(currentPrice())
     high = highPrice()
     low = lowPrice()
 
     if high is not None:
-        high = +float(high)
-        low = +float(low)
+        high = float(high)
+        low = float(low)
         pinc = '{:.2%}'.format((current-low)/current)
         pdcr = '{:.2%}'.format((current-high)/current)
     elif high is None:
@@ -79,8 +79,8 @@ while True:
         if low is not None and high is not None:
             if ((low) + a) <= (current):
                 if not message_sent:
-                    current = '{:g}'.format(current)
-                    low = '{:g}'.format(low)
+                    current = int(current)
+                    low = int(low)
                     payload = {'chat_id': CHAT_ID, 'text':\
                     inc.format(current, pinc, low), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
@@ -89,8 +89,8 @@ while True:
                     time.sleep(sleep_time)
             elif ((high) - a) >= (current):
                 if not message_sent:
-                    current = '{:g}'.format(current)
-                    high = '{:g}'.format(high)
+                    current = int(current)
+                    high = int(high)
                     payload = {'chat_id': CHAT_ID, 'text':\
                     dcr.format(current, pdcr, high), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
