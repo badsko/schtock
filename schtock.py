@@ -76,7 +76,7 @@ while True:
         time.sleep(delta.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         print(stamp,'- Market open.')
-    if not tt and date:
+    if not tt and not date:
         weekend = now + timedelta(days=2)
         dwknd = weekend - now
         print(stamp, '- Pausing %s during the weekend.' % dwknd)
@@ -126,3 +126,4 @@ while True:
         time.sleep(deltaAfter.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         print(stamp, '- It is a new day.')
+
