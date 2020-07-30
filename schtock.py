@@ -63,18 +63,24 @@ while True:
     high = highPrice()
     low = lowPrice()
     stamp = datetime.now().strftime('%H:%M')
-    date = datetime.today().isoweekday() < 6
+    date = datetime.today().isoweekday() < 5
     tt = stamp > '13:30' and stamp < '20:00'
     now = datetime.now()
     target = datetime(now.year, now.month, now.day, hour=13, minute=30)
     ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
     delta = target - now
     deltaAfter = ah - now
+    weekend = now + timedelta(days=2)
+    dwknd = weekend - now
 
     if delta > timedelta(0):
         print(stamp, '- Pausing %s until market opens.' % delta)
         time.sleep(delta.total_seconds())
         print(stamp,'- Market open.')
+    if not date:
+        print(stamp, '- Pausing %s during the weekend.' % dwknd)
+        time.sleep(dwknd.total_seconds())
+        print(stamp,'- Weekday start.')
 
     if high is not None:
         high = float(high)
