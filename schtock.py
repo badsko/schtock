@@ -1,4 +1,4 @@
-import bs4
+iimport bs4
 import requests
 import os
 import time
@@ -77,7 +77,7 @@ while True:
         print(stamp, '- Pausing %s until market opens.' % delta)
         time.sleep(delta.total_seconds())
         print(stamp,'- Market open.')
-    if not date:
+    if not tt and date:
         print(stamp, '- Pausing %s during the weekend.' % dwknd)
         time.sleep(dwknd.total_seconds())
         print(stamp,'- Weekday start.')
