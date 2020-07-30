@@ -1,4 +1,4 @@
-iimport bs4
+import bs4
 import requests
 import os
 import time
