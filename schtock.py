@@ -63,7 +63,7 @@ while True:
     high = highPrice()
     low = lowPrice()
     stamp = datetime.now().strftime('%H:%M')
-    date = datetime.today().isoweekday() < 5
+    date = datetime.today().isoweekday() < 6
     tt = stamp > '13:30' and stamp < '20:00'
     now = datetime.now()
     target = datetime(now.year, now.month, now.day, hour=13, minute=30)
