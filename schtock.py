@@ -3,18 +3,18 @@ import requests
 import os
 import time
 from bs4 import BeautifulSoup
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 a = 100
-p = 1
+p = None
 poll_time = 60*5
 sleep_time = 60*75
-pmin = poll_time//60
-smin = sleep_time//60
+pmin = poll_time // 60
+smin = sleep_time // 60
 remove_character = ['\xa0', '-']
 url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
 inc = 'TSLA at `${}`. Increased `{}` from low point of `${}` today.'
@@ -59,20 +59,30 @@ def lowPrice():
 
 while True:
     message_sent = False
-    stamp = datetime.now().strftime('%H:%M')
-    date = datetime.today().isoweekday() < 6
-    tt = stamp > '13:30' and stamp < '20:00'
     current = float(currentPrice())
     high = highPrice()
     low = lowPrice()
+    stamp = datetime.now().strftime('%H:%M')
+    date = datetime.today().isoweekday() < 6
+    tt = stamp > '13:30' and stamp < '20:00'
+    now = datetime.now()
+    target = datetime(now.year, now.month, now.day, hour=13, minute=30)
+    ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
+    delta = target - now
+    deltaAfter = ah - now
+
+    if delta > timedelta(0):
+        print(stamp, '- Pausing %s until market opens.' % delta)
+        time.sleep(delta.total_seconds())
+        print(stamp,'- Market open.')
 
     if high is not None:
         high = float(high)
         low = float(low)
-        pinc = '{:.2%}'.format((current-low)/current)
-        pdcr = '{:.2%}'.format((current-high)/current)
+        pinc = '{:.2%}'.format((current - low) / current)
+        pdcr = '{:.2%}'.format((current - high) / current)
     elif high is None:
-        print (stamp, '- Value returned None. Pausing', pmin, 'min.')
+        print(stamp, '- Value returned None. Pausing', pmin, 'min.')
         time.sleep(poll_time)
 
     if tt and date:
@@ -85,7 +95,7 @@ while True:
                     inc.format(current, pinc, low), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
-                    print (stamp, '- Increased. Pausing', smin, 'min.')
+                    print(stamp, '- Increased. Pausing', smin, 'min.')
                     time.sleep(sleep_time)
             elif ((high) - a) >= (current):
                 if not message_sent:
@@ -94,12 +104,15 @@ while True:
                     payload = {'chat_id': CHAT_ID, 'text':\
                     dcr.format(current, pdcr, high), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
-                    print (stamp, '- Decreased. Pausing', smin, 'min.')
+                    print(stamp, '- Decreased. Pausing', smin, 'min.')
                     message_sent = True
                     time.sleep(sleep_time)
             else:
-                print (stamp, '- Not enough change. Pausing', pmin, 'min.')
+                print(stamp, '- Not enough change. Pausing', pmin, 'min.')
                 time.sleep(poll_time)
-    else:
-        print (stamp, '- Market closed. Pausing', pmin, 'min.')
-        time.sleep(poll_time)
+        else:
+            print(stamp, '- Error low or high returned None.')
+    elif deltaAfter > timedelta(0):
+        print(stamp, '- Market closed. Pausing %s until tomorrow.' % deltaAfter)
+        time.sleep(deltaAfter.total_seconds())
+        print(stamp, '- It is a new day.')
