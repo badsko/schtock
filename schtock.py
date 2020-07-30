@@ -70,16 +70,18 @@ while True:
     ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
     delta = target - now
     deltaAfter = ah - now
-    weekend = now + timedelta(days=2)
-    dwknd = weekend - now
 
     if delta > timedelta(0):
         print(stamp, '- Pausing %s until market opens.' % delta)
         time.sleep(delta.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
         print(stamp,'- Market open.')
     if not tt and date:
+        weekend = now + timedelta(days=2)
+        dwknd = weekend - now
         print(stamp, '- Pausing %s during the weekend.' % dwknd)
         time.sleep(dwknd.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
         print(stamp,'- Weekday start.')
 
     if high is not None:
@@ -90,6 +92,7 @@ while True:
     elif high is None:
         print(stamp, '- Value returned None. Pausing', pmin, 'min.')
         time.sleep(poll_time)
+        stamp = datetime.now().strftime('%H:%M')
 
     if tt and date:
         if low is not None and high is not None:
@@ -121,4 +124,5 @@ while True:
     elif deltaAfter > timedelta(0):
         print(stamp, '- Market closed. Pausing %s until tomorrow.' % deltaAfter)
         time.sleep(deltaAfter.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
         print(stamp, '- It is a new day.')
