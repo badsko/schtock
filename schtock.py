@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import bs4
 import requests
 import os
@@ -126,4 +128,3 @@ while True:
         time.sleep(deltaAfter.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         print(stamp, '- It is a new day.')
-
