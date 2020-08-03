@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
+# USD stock price increase or decrease
 a = 100
 p = None
 poll_time = 60*5
@@ -67,17 +68,13 @@ while True:
     stamp = datetime.now().strftime('%H:%M')
     date = datetime.today().isoweekday() < 6
     tt = stamp > '13:30' and stamp < '20:00'
+    after = stamp > '20:00' and stamp < '24:00'
     now = datetime.now()
     target = datetime(now.year, now.month, now.day, hour=13, minute=30)
-    ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
     delta = target - now
+    ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
     deltaAfter = ah - now
 
-    if delta > timedelta(0):
-        print(stamp, '- Pausing %s until market opens.' % delta)
-        time.sleep(delta.total_seconds())
-        stamp = datetime.now().strftime('%H:%M')
-        print(stamp,'- Market open.')
     if not tt and not date:
         weekend = now + timedelta(days=2)
         dwknd = weekend - now
@@ -85,6 +82,18 @@ while True:
         time.sleep(dwknd.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         print(stamp,'- Weekday start.')
+
+    if delta > timedelta(0):
+        print(stamp, '- Pausing %s until market opens.' % delta)
+        time.sleep(delta.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
+        print(stamp,'- Market open.')
+
+    if after and deltaAfter > timedelta(0):
+        print(stamp, '- Market closed. Pausing %s until tomorrow.' % deltaAfter)
+        time.sleep(deltaAfter.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
+        print(stamp, '- It is a new day.')
 
     if high is not None:
         high = float(high)
@@ -123,8 +132,6 @@ while True:
                 time.sleep(poll_time)
         else:
             print(stamp, '- Error low or high returned None.')
-    elif deltaAfter > timedelta(0):
-        print(stamp, '- Market closed. Pausing %s until tomorrow.' % deltaAfter)
-        time.sleep(deltaAfter.total_seconds())
-        stamp = datetime.now().strftime('%H:%M')
-        print(stamp, '- It is a new day.')
+    else:
+        print(stamp, '- Market closed. Pausing', pmin, 'min.')
+        time.sleep(poll_time)
