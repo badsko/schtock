@@ -4,6 +4,7 @@ import bs4
 import requests
 import os
 import time
+import logging
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -23,6 +24,10 @@ url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
 inc = 'TSLA at `${}`. Increased `{}` from low point of `${}` today.'
 dcr = 'TSLA at `${}`. Decreased `{}` from high point of `${}` today.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 def currentPrice():
     r = requests.get(url)
@@ -78,22 +83,22 @@ while True:
     if not tt and not date:
         weekend = now + timedelta(days=2)
         dwknd = weekend - now
-        print(stamp, '- Pausing %s during the weekend.' % dwknd)
+        logging.info('Weekend')
+        print('Pausing %s.' % dwknd)
         time.sleep(dwknd.total_seconds())
-        stamp = datetime.now().strftime('%H:%M')
-        print(stamp,'- Weekday start.')
+        logging.info('Weekday')
 
     if delta > timedelta(0):
-        print(stamp, '- Pausing %s until market opens.' % delta)
+        logging.info('Market closed')
+        print('Pausing %s.' % delta)
         time.sleep(delta.total_seconds())
-        stamp = datetime.now().strftime('%H:%M')
-        print(stamp,'- Market open.')
+        logging.info('Market open')
 
     if after and deltaAfter > timedelta(0):
-        print(stamp, '- Market closed. Pausing %s until tomorrow.' % deltaAfter)
+        logging.info('After hours')
+        print('Pausing %s.' % deltaAfter)
         time.sleep(deltaAfter.total_seconds())
-        stamp = datetime.now().strftime('%H:%M')
-        print(stamp, '- It is a new day.')
+        logging.info('New day')
 
     if high is not None:
         high = float(high)
@@ -101,7 +106,8 @@ while True:
         pinc = '{:.2%}'.format((current - low) / current)
         pdcr = '{:.2%}'.format((current - high) / current)
     elif high is None:
-        print(stamp, '- Value returned None. Pausing', pmin, 'min.')
+        logging.info('Value returned None')
+        print('Pausing', pmin, 'min.')
         time.sleep(poll_time)
         stamp = datetime.now().strftime('%H:%M')
 
@@ -115,7 +121,8 @@ while True:
                     inc.format(current, pinc, low), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
-                    print(stamp, '- Increased. Pausing', smin, 'min.')
+                    logging.info('Increased')
+                    print('Pausing', smin, 'min.')
                     time.sleep(sleep_time)
             elif ((high) - a) >= (current):
                 if not message_sent:
@@ -124,14 +131,17 @@ while True:
                     payload = {'chat_id': CHAT_ID, 'text':\
                     dcr.format(current, pdcr, high), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
-                    print(stamp, '- Decreased. Pausing', smin, 'min.')
                     message_sent = True
+                    logging.info('Decreased')
+                    print('Pausing', smin, 'min.')
                     time.sleep(sleep_time)
             else:
-                print(stamp, '- Not enough change. Pausing', pmin, 'min.')
+                logging.info('Not enough change')
+                print('Pausing', pmin, 'min.')
                 time.sleep(poll_time)
         else:
-            print(stamp, '- Error low or high returned None.')
+            logging.info('Error! low or high returned None')
     else:
-        print(stamp, '- Market closed. Pausing', pmin, 'min.')
+        logging.info('Market closed')
+        print('Pausing', pmin, 'min.')
         time.sleep(poll_time)
