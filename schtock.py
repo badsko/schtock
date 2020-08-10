@@ -145,6 +145,6 @@ while True:
         else:
             logging.info('Error! low or high returned None')
     else:
-        logging.info('Market closed')
+        logging.info('Outside open hours')
         print('Pausing', pmin, 'min.')
         time.sleep(poll_time)
