@@ -86,18 +86,21 @@ while True:
         logging.info('Weekend')
         print('Pausing %s.' % dwknd)
         time.sleep(dwknd.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
         logging.info('Weekday')
 
     if delta > timedelta(0):
         logging.info('Market closed')
         print('Pausing %s.' % delta)
         time.sleep(delta.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
         logging.info('Market open')
 
     if after and deltaAfter > timedelta(0):
         logging.info('After hours')
         print('Pausing %s.' % deltaAfter)
         time.sleep(deltaAfter.total_seconds())
+        stamp = datetime.now().strftime('%H:%M')
         logging.info('New day')
 
     if high is not None:
