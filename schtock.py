@@ -134,7 +134,7 @@ while True:
                     logging.info('Decreased')
                     time.sleep(sleep_time)
             else:
-                logging.info('Not enough change.')
+                logging.info('Not enough change')
                 time.sleep(poll_time)
         else:
             logging.info('Error! low or high returned None')
