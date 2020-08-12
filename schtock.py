@@ -13,6 +13,7 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 # USD stock price increase or decrease
+# TODO Change a to 12 before 2020-08-31 13:30
 a = 60
 p = None
 poll_time = 60*5
@@ -83,25 +84,22 @@ while True:
     if not tt and not date:
         weekend = now + timedelta(days=2)
         dwknd = weekend - now
-        logging.info('Weekend')
-        print('Pausing %s.' % dwknd)
+        logging.info('Weekend. Pausing until next business day')
         time.sleep(dwknd.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         logging.info('Weekday')
 
     if delta > timedelta(0):
-        logging.info('Market closed')
-        print('Pausing %s.' % delta)
+        logging.info('Market closed. Pausing until it opens')
         time.sleep(delta.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         logging.info('Market open')
 
     if after and deltaAfter > timedelta(0):
-        logging.info('After hours')
-        print('Pausing %s.' % deltaAfter)
+        logging.info('After hours. Pausing until tomorrow')
         time.sleep(deltaAfter.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
-        logging.info('New day')
+        logging.info('It is a brand new day')
 
     if high is not None:
         high = float(high)
@@ -110,7 +108,6 @@ while True:
         pdcr = '{:.2%}'.format((current - high) / current)
     elif high is None:
         logging.info('Value returned None')
-        print('Pausing', pmin, 'min.')
         time.sleep(poll_time)
         stamp = datetime.now().strftime('%H:%M')
 
@@ -125,7 +122,6 @@ while True:
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     logging.info('Increased')
-                    print('Pausing', smin, 'min.')
                     time.sleep(sleep_time)
             elif ((high) - a) >= (current):
                 if not message_sent:
@@ -136,15 +132,12 @@ while True:
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     logging.info('Decreased')
-                    print('Pausing', smin, 'min.')
                     time.sleep(sleep_time)
             else:
-                logging.info('Not enough change')
-                print('Pausing', pmin, 'min.')
+                logging.info('Not enough change.')
                 time.sleep(poll_time)
         else:
             logging.info('Error! low or high returned None')
     else:
         logging.info('Outside open hours')
-        print('Pausing', pmin, 'min.')
         time.sleep(poll_time)
