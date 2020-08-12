@@ -1,4 +1,4 @@
-FROM python:3.8.3-slim-buster
+FROM python:3.8.5-slim-buster
 
 COPY schtock.py requirements.txt .env /
 RUN apt-get -y update
