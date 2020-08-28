@@ -13,8 +13,7 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 # USD stock price increase or decrease
-# TODO Change a to 12 before 2020-08-31 13:30
-a = 60
+a = 12
 p = None
 poll_time = 60*5
 sleep_time = 60*75
