@@ -13,7 +13,7 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 # USD stock price increase or decrease
-a = 5
+a = 12
 p = None
 poll_time = 60*5
 sleep_time = 60*75
