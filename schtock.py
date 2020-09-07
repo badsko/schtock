@@ -19,10 +19,9 @@ poll_time = 60*5
 sleep_time = 60*75
 pmin = poll_time // 60
 smin = sleep_time // 60
-remove_character = ['\xa0', '-']
-url = 'https://www.avanza.se/aktier/om-aktien.html/238449/tesla-inc'
-inc = 'TSLA at `${}`. Increased `{}` from low point of `${}` today.'
-dcr = 'TSLA at `${}`. Decreased `{}` from high point of `${}` today.'
+url = 'https://finance.yahoo.com/quote/TSLA?p=TSLA'
+inc = 'TSLA at `${}`. Increased `{}` from closing at `${}` yesterday.'
+dcr = 'TSLA at `${}`. Decreased `{}` from closing at `${}` yesterday.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -32,34 +31,16 @@ logging.basicConfig(
 def currentPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
-    c = 'pushBox roundCorners3'
-    p = soup.find('span',{'class': c}).text
-    for character in remove_character:
-        p = p.replace(',', '.').replace(character, '')
+    p = soup.find("span", attrs={"data-reactid":"32"}).text
     if p == '':
         return
     else:
         return p
 
-def highPrice():
+def closePrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
-    c = 'highestPrice SText bold'
-    p = soup.find('span',{'class': c}).text
-    for character in remove_character:
-        p = p.replace(',', '.').replace(character, '')
-    if p == '':
-        return
-    else:
-        return p
-
-def lowPrice():
-    r = requests.get(url)
-    soup = bs4.BeautifulSoup(r.text,'lxml')
-    c = 'lowestPrice SText bold'
-    p = soup.find('span',{'class': c}).text
-    for character in remove_character:
-        p = p.replace(',', '.').replace(character, '')
+    p = soup.find(attrs={"data-test":"PREV_CLOSE-value"}).text
     if p == '':
         return
     else:
@@ -68,8 +49,7 @@ def lowPrice():
 while True:
     message_sent = False
     current = float(currentPrice())
-    high = highPrice()
-    low = lowPrice()
+    close = float(closePrice())
     stamp = datetime.now().strftime('%H:%M')
     date = datetime.today().isoweekday() < 6
     tt = stamp > '13:30' and stamp < '20:00'
@@ -99,35 +79,32 @@ while True:
         time.sleep(deltaAfter.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         logging.info('It is a brand new day')
-
-    if high is not None:
-        high = float(high)
-        low = float(low)
-        pinc = '{:.2%}'.format((current - low) / current)
-        pdcr = '{:.2%}'.format((current - high) / current)
-    elif high is None:
+      
+    elif close is None:
         logging.info('Value returned None')
         time.sleep(poll_time)
         stamp = datetime.now().strftime('%H:%M')
 
     if tt and date:
-        if low is not None and high is not None:
-            if ((low) + a) <= (current):
+        if current is not None and close is not None:
+            if ((close) + a) <= (current):
                 if not message_sent:
+                    pinc = '{:.2%}'.format((current - close) / current)
                     current = int(current)
-                    low = int(low)
+                    close = int(close)
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    inc.format(current, pinc, low), 'parse_mode': 'markdown'}
+                    inc.format(current, pinc, close), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     logging.info('Increased')
                     time.sleep(sleep_time)
-            elif ((high) - a) >= (current):
+            elif ((close) - a) >= (current):
                 if not message_sent:
+                    pdcr = '{:.2%}'.format((current - close) / current)
                     current = int(current)
-                    high = int(high)
+                    close = int(close)
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    dcr.format(current, pdcr, high), 'parse_mode': 'markdown'}
+                    dcr.format(current, pdcr, close), 'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     logging.info('Decreased')
