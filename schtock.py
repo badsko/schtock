@@ -13,15 +13,14 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 # USD stock price increase or decrease
-a = 12
+a = 5
 p = None
 poll_time = 60*5
 sleep_time = 60*75
 pmin = poll_time // 60
 smin = sleep_time // 60
 url = 'https://finance.yahoo.com/quote/TSLA?p=TSLA'
-inc = 'TSLA at `${}`. Increased `{}` from closing at `${}` yesterday.'
-dcr = 'TSLA at `${}`. Decreased `{}` from closing at `${}` yesterday.'
+msg = 'TSLA at `${}` (`{}`) from closing at `${}` yesterday.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -79,32 +78,31 @@ while True:
         time.sleep(deltaAfter.total_seconds())
         stamp = datetime.now().strftime('%H:%M')
         logging.info('It is a brand new day')
-      
+
+    if current is not None:
+        per = '{:.2%}'.format((current - close) / current)
+
     elif close is None:
         logging.info('Value returned None')
         time.sleep(poll_time)
         stamp = datetime.now().strftime('%H:%M')
-
+        
     if tt and date:
         if current is not None and close is not None:
             if ((close) + a) <= (current):
                 if not message_sent:
-                    pinc = '{:.2%}'.format((current - close) / current)
-                    current = int(current)
-                    close = int(close)
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    inc.format(current, pinc, close), 'parse_mode': 'markdown'}
+                    msg.format(int(current), per, int(close)),\
+                    'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     logging.info('Increased')
                     time.sleep(sleep_time)
             elif ((close) - a) >= (current):
                 if not message_sent:
-                    pdcr = '{:.2%}'.format((current - close) / current)
-                    current = int(current)
-                    close = int(close)
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    dcr.format(current, pdcr, close), 'parse_mode': 'markdown'}
+                    msg.format(int(current), per, int(close)),\
+                    'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
                     logging.info('Decreased')
