@@ -21,7 +21,7 @@ pmin = poll_time // 60
 smin = sleep_time // 60
 url = 'https://finance.yahoo.com/quote/TSLA?p=TSLA'
 msg = 'TSLA at `${}` `{}` `({})` from previous close at `${}`.'
-msgup = 'TSLA at `${}` `+{}` `({})` from previous close at `${}`.'
+msgup = 'TSLA at `${}` `+{}` `(+{})` from previous close at `${}`.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
