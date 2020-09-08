@@ -20,7 +20,7 @@ sleep_time = 60*75
 pmin = poll_time // 60
 smin = sleep_time // 60
 url = 'https://finance.yahoo.com/quote/TSLA?p=TSLA'
-msg = 'TSLA at `${}` (`{}`) from closing at `${}` yesterday.'
+msg = 'TSLA at `${}` `{}` `({})` from closing at `${}` yesterday.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
@@ -81,6 +81,7 @@ while True:
 
     if current is not None:
         per = '{:.2%}'.format((current - close) / current)
+        diff = '{:.2f}'.format(current - close)
 
     elif close is None:
         logging.info('Value returned None')
@@ -92,7 +93,7 @@ while True:
             if ((close) + a) <= (current):
                 if not message_sent:
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    msg.format(int(current), per, int(close)),\
+                    msg.format(int(current), diff, per, int(close)),\
                     'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
@@ -101,7 +102,7 @@ while True:
             elif ((close) - a) >= (current):
                 if not message_sent:
                     payload = {'chat_id': CHAT_ID, 'text':\
-                    msg.format(int(current), per, int(close)),\
+                    msg.format(int(current), diff, per, int(close)),\
                     'parse_mode': 'markdown'}
                     r = requests.post(TELEGRAM_API_SEND_MSG, params=payload)
                     message_sent = True
