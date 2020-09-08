@@ -81,7 +81,7 @@ while True:
         logging.info('It is a brand new day')
 
     if current is not None:
-        per = '{:.2%}'.format((current - close) / current)
+        per = '{:.2%}'.format((current - close) / close)
         diff = '{:.2f}'.format(current - close)
 
     elif close is None:
