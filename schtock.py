@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 
 TICKER = str(sys.argv[1])
 # USD stock price increase or decrease
-a = sys.argv[2]
+a = float(sys.argv[2])
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
