@@ -5,21 +5,24 @@ import requests
 import os
 import time
 import logging
+import sys
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
+TICKER = str(sys.argv[1])
+# USD stock price increase or decrease
+a = sys.argv[2]
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
-# USD stock price increase or decrease
-a = 12
 p = None
 poll_time = 60*5
 sleep_time = 60*75
 pmin = poll_time // 60
 smin = sleep_time // 60
-url = 'https://finance.yahoo.com/quote/TSLA?p=TSLA'
+remove_character = ['\xa0', '-'] 
+url = f'https://finance.yahoo.com/quote/{TICKER}?p={TICKER}'
 msg = 'TSLA at `${}` `{}` `({})` from previous close at `${}`.'
 msgup = 'TSLA at `${}` `+{}` `(+{})` from previous close at `${}`.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
@@ -32,6 +35,8 @@ def currentPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     p = soup.find("span", attrs={"data-reactid":"32"}).text
+    for character in remove_character:
+        p = p.replace(',', '').replace(character, '')
     if p == '':
         return
     else:
@@ -41,6 +46,8 @@ def closePrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'lxml')
     p = soup.find(attrs={"data-test":"PREV_CLOSE-value"}).text
+    for character in remove_character:
+        p = p.replace(',', '').replace(character, '')
     if p == '':
         return
     else:
