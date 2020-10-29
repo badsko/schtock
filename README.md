@@ -17,8 +17,9 @@ CHAT_ID=123
 ## Docker
 `docker build --tag schtock:1.0 .`
 
-Pass ticker(TSLA) and price(12) arguments.
+`docker run -d --restart unless-stopped schtock:1.0 TICKER USD`
 
+## Example
 `docker run -d --restart unless-stopped schtock:1.0 TSLA 12`
 
 ## License
