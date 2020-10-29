@@ -17,7 +17,8 @@ CHAT_ID=123
 ## Docker
 `docker build --tag schtock:1.0 .`
 
-`docker run -d --restart unless-stopped schtock:1.0`
+Pass ticker(TSLA) and price(12) arguments.
+`docker run -d --restart unless-stopped schtock:1.0 TSLA 12`
 
 ## License
 [GPL-3.0 License](https://github.com/badsko/schtock/blob/master/LICENSE)
