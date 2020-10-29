@@ -23,8 +23,8 @@ pmin = poll_time // 60
 smin = sleep_time // 60
 remove_character = ['\xa0', '-'] 
 url = f'https://finance.yahoo.com/quote/{TICKER}?p={TICKER}'
-msg = 'TSLA at `${}` `{}` `({})` from previous close at `${}`.'
-msgup = 'TSLA at `${}` `+{}` `(+{})` from previous close at `${}`.'
+msg = TICKER + ' at `${}` `{}` `({})` from previous close at `${}`.'
+msgup = TICKER + ' at `${}` `+{}` `(+{})` from previous close at `${}`.'
 TELEGRAM_API_SEND_MSG = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s %(message)s',
