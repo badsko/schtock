@@ -59,8 +59,8 @@ while True:
     close = float(closePrice())
     stamp = datetime.now().strftime('%H:%M')
     date = datetime.today().isoweekday() < 6
-    tt = stamp > '13:30' and stamp < '20:00'
-    after = stamp > '20:00' and stamp < '24:00'
+    tt = stamp > '14:30' and stamp < '21:00'
+    after = stamp > '21:00' and stamp < '24:00'
     now = datetime.now()
     target = datetime(now.year, now.month, now.day, hour=13, minute=30)
     delta = target - now
