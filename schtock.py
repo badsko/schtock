@@ -62,7 +62,7 @@ while True:
     tt = stamp > '14:30' and stamp < '21:00'
     after = stamp > '21:00' and stamp < '24:00'
     now = datetime.now()
-    target = datetime(now.year, now.month, now.day, hour=13, minute=30)
+    target = datetime(now.year, now.month, now.day, hour=14, minute=30)
     delta = target - now
     ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
     deltaAfter = ah - now
