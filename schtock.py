@@ -10,9 +10,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-TICKER = 'TSLA' #str(sys.argv[1])
+TICKER = str(sys.argv[1])
 # USD stock price increase or decrease
-a = 12 #float(sys.argv[2])
+a = float(sys.argv[2])
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
