@@ -10,9 +10,9 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 
-TICKER = str(sys.argv[1])
+TICKER = 'TSLA' #str(sys.argv[1])
 # USD stock price increase or decrease
-a = float(sys.argv[2])
+a = 12 #float(sys.argv[2])
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
@@ -33,7 +33,7 @@ logging.basicConfig(
 
 def currentPrice():
     r = requests.get(url)
-    soup = bs4.BeautifulSoup(r.text,'lxml')
+    soup = bs4.BeautifulSoup(r.text,'html5lib')
     p = soup.find("span", attrs={"data-reactid":"32"}).text
     for character in remove_character:
         p = p.replace(',', '').replace(character, '')
@@ -44,7 +44,7 @@ def currentPrice():
 
 def closePrice():
     r = requests.get(url)
-    soup = bs4.BeautifulSoup(r.text,'lxml')
+    soup = bs4.BeautifulSoup(r.text,'html5lib')
     p = soup.find(attrs={"data-test":"PREV_CLOSE-value"}).text
     for character in remove_character:
         p = p.replace(',', '').replace(character, '')
@@ -59,10 +59,10 @@ while True:
     close = float(closePrice())
     stamp = datetime.now().strftime('%H:%M')
     date = datetime.today().isoweekday() < 6
-    tt = stamp > '14:30' and stamp < '21:00'
-    after = stamp > '21:00' and stamp < '24:00'
+    tt = stamp > '13:30' and stamp < '21:00'
+    after = stamp > '20:00' and stamp < '24:00'
     now = datetime.now()
-    target = datetime(now.year, now.month, now.day, hour=14, minute=30)
+    target = datetime(now.year, now.month, now.day, hour=13, minute=30)
     delta = target - now
     ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
     deltaAfter = ah - now
