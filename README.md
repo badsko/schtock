@@ -20,7 +20,8 @@ CHAT_ID=123
 `docker run -d --restart unless-stopped schtock:1.0 TICKER USD`
 
 ## Example
-`docker run -d --name TSLA --restart unless-stopped schtock:1.0 TSLA 12`
+Container using timezone CET.
+`docker run -e TZ=Europe/Amsterdam -d --name TSLA --restart unless-stopped schtock:1.0 TSLA 12`
 
 ## License
 [GPL-3.0 License](https://github.com/badsko/schtock/blob/master/LICENSE)
