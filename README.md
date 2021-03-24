@@ -21,6 +21,7 @@ CHAT_ID=123
 
 ## Example
 Container using timezone CET.
+
 `docker run -e TZ=Europe/Amsterdam -d --name TSLA --restart unless-stopped schtock:1.0 TSLA 12`
 
 ## License
