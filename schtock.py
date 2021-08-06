@@ -1,4 +1,6 @@
-mport bs4
+#!/usr/bin/env python3
+
+import bs4
 import requests
 import os
 import time
@@ -14,7 +16,7 @@ load_dotenv()
 TOKEN = os.getenv('TOKEN')
 CHAT_ID = os.getenv('CHAT_ID')
 p = None
-poll_time = 60*10
+poll_time = 60*5
 sleep_time = 60*75
 pmin = poll_time // 60
 smin = sleep_time // 60
@@ -31,7 +33,8 @@ logging.basicConfig(
 def currentPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'html5lib')
-    p = soup.find("span", attrs={"data-reactid":"32"}).text
+    p = soup.find("span", 
+    attrs={"class":"Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)"}).text
     for character in remove_character:
         p = p.replace(',', '').replace(character, '')
     if p == '':
@@ -56,10 +59,10 @@ while True:
     close = float(closePrice())
     stamp = datetime.now().strftime('%H:%M')
     date = datetime.today().isoweekday() < 6
-    tt = stamp > '14:30' and stamp < '21:00'
-    after = stamp > '21:00' and stamp < '24:00'
+    tt = stamp > '15:30' and stamp < '22:00'
+    after = stamp > '22:00' and stamp < '24:00'
     now = datetime.now()
-    target = datetime(now.year, now.month, now.day, hour=14, minute=30)
+    target = datetime(now.year, now.month, now.day, hour=15, minute=30)
     delta = target - now
     ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
     deltaAfter = ah - now
