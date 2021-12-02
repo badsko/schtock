@@ -33,8 +33,8 @@ logging.basicConfig(
 def currentPrice():
     r = requests.get(url)
     soup = bs4.BeautifulSoup(r.text,'html5lib')
-    p = soup.find("span", 
-    attrs={"class":"Trsdu(0.3s) Fw(b) Fz(36px) Mb(-4px) D(ib)"}).text
+    p = soup.find("fin-streamer", 
+    attrs={"class":"Fw(b) Fz(36px) Mb(-4px) D(ib)"}).text
     for character in remove_character:
         p = p.replace(',', '').replace(character, '')
     if p == '':
