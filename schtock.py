@@ -33,9 +33,10 @@ def main():
         datefmt='%Y-%m-%d %H:%M:%S')
 
     def currentPrice():
-        r = requests.get(url)
+        r = requests.get(url, timeout=(3.05, 27))
         soup = bs4.BeautifulSoup(r.text,'html5lib')
-        p = soup.find('fin-streamer', {'class':"Fw(b) Fz(36px) Mb(-4px) D(ib)"})['value']
+        p = soup.find('fin-streamer', \
+        {'class':"Fw(b) Fz(36px) Mb(-4px) D(ib)"})['value']
         for character in remove_character:
             p = p.replace(',', '').replace(character, '')
         if p == '':
@@ -65,7 +66,8 @@ def main():
         now = datetime.now()
         target = datetime(now.year, now.month, now.day, hour=15, minute=30)
         delta = target - now
-        ah = datetime(now.year, now.month, now.day, hour=23, minute=59, second=59)
+        ah = datetime(now.year, now.month, now.day, \
+        hour=23, minute=59, second=59)
         deltaAfter = ah - now
     
         if not tt and not date:
