@@ -1,5 +1,5 @@
-# Web Scraper for Tracking and Alerting Stock Price
-Simple Python script that scrapes Avanza for stock change and alerts on price up or down by a set amount.
+# Tracking and Alerting Stock Price
+Simple Python script to get price of a ticker and alert to telegram chat on a set amount of increase or decrease.
 
 ## Telegram
 [https://core.telegram.org/bots](https://core.telegram.org/bots)
@@ -8,10 +8,15 @@ Grab your Token from @BotFather.
 
 Find your Chat ID (e.g., by inviting @RawDataBot to your channel).
 
+## IEX
+Register for a free token.
+[https://iexcloud.io/cloud-login#/register](https://iexcloud.io/cloud-login#/register)
+
 ## Modify `.env`
 ```
 TOKEN=123:ABC
 CHAT_ID=123
+IEX=123
 ```
 
 ## Docker
