@@ -111,7 +111,6 @@ def main():
                 logging.info('Outside open hours')
                 close = None
                 time.sleep(poll_time)
-
     else:
         print(r.status_code)
 
