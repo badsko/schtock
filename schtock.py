@@ -19,7 +19,7 @@ def main():
     chat_id = os.getenv('CHAT_ID')
     payload = {'token': iex}
     poll_time = 60*1
-    sleep_time = 60*60
+    sleep_time = 60*55
     pmin = poll_time // 60
     smin = sleep_time // 60
     p = None
