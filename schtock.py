@@ -50,22 +50,22 @@ def main():
             if not tt and not date:
                 weekend = now + timedelta(days=2)
                 dwknd = weekend - now
-                logging.info('Weekend. Pausing until next business day')
-                print('Sleeping for', dwknd)
+                logging.info('Weekend. Sleeping for %s', \
+                str(dwknd).split('.')[0])
                 time.sleep(dwknd.total_seconds())
                 logging.info('Weekday')
                 stamp = datetime.now().strftime('%H:%M')
 
             if delta > timedelta(0):
-                logging.info('Market closed')
-                print('Sleeping for', delta)
+                logging.info('Market closed. Sleeping for %s', \
+                str(delta).split('.')[0])
                 time.sleep(delta.total_seconds())
                 logging.info('Market open')
                 stamp = datetime.now().strftime('%H:%M')
 
             if after and deltaAfter > timedelta(0):
-                logging.info('After hours')
-                print('Sleeping for', deltaAfter)
+                logging.info('After hours. Sleeping for %s', \
+                str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
                 logging.info('It is a brand new day')
                 stamp = datetime.now().strftime('%H:%M')
@@ -103,8 +103,8 @@ def main():
                     logging.info(r.status_code)
                     time.sleep(poll_time)
             else:
-                logging.info('Market closed.')
-                print('Sleeping for', deltaAfter)
+                logging.info('Market closed. Sleeping for %s', \
+                str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
     else:
         logging.info('HTTP response code.')
