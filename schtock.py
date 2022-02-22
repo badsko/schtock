@@ -28,8 +28,11 @@ def main():
         format='%(asctime)s %(levelname)-8s %(message)s',
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
-
-    if r.status_code == 200:
+    sy = requests.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
+    timeout=3, params=payload)
+    sy_list = sy.json()
+    
+    if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:    
         while True:
             r = requests.get(url, timeout=3, params=payload)
             r_dict = r.json()
@@ -99,7 +102,7 @@ def main():
                         logging.info('Not enough change')
                         time.sleep(poll_time)
                 else:
-                    logging.info('HTTP response code.')
+                    logging.info('HTTP response code')
                     logging.info(r.status_code)
                     time.sleep(poll_time)
             else:
@@ -107,8 +110,8 @@ def main():
                 str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
     else:
-        logging.info('HTTP response code.')
-        logging.info(r.status_code)
+        logging.info('IEX symbol is not correct or')
+        logging.info('HTTP response code %s is not OK', r.status_code)
 
 if __name__ == "__main__":
     main()
