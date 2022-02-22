@@ -34,11 +34,11 @@ def main():
 
     if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:    
         while True:
-            r = requests.get(url, timeout=3, params=payload)
-            r_dict = r.json()
-            current = r_dict['latestPrice']
-            close = r_dict['previousClose']
-            isopen = r_dict['isUSMarketOpen']
+            g = requests.get(url, timeout=3, params=payload)
+            g_dict = g.json()
+            current = g_dict['latestPrice']
+            close = g_dict['previousClose']
+            isopen = g_dict['isUSMarketOpen']
             stamp = datetime.now().strftime('%H:%M')
             date = datetime.today().isoweekday() < 6
             tt = stamp > '15:30' and stamp < '22:00'
