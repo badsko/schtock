@@ -22,16 +22,16 @@ def main():
     url = f'https://cloud.iexapis.com/stable/stock/{ticker}/quote'
     telegram = f'https://api.telegram.org/bot{token}/sendMessage'
     r = requests.get('https://cloud.iexapis.com/stable/status', timeout=3)
+    sy = requests.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
+    timeout=3, params=payload)
+    sy_list = sy.json()
     msg = ticker + ' at `${}` `{}` `({})` from previous close at `${}`.'
     msgup = ticker + ' at `${}` `+{}` `(+{})` from previous close at `${}`.'
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
-    sy = requests.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
-    timeout=3, params=payload)
-    sy_list = sy.json()
-    
+
     if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:    
         while True:
             r = requests.get(url, timeout=3, params=payload)
@@ -78,7 +78,8 @@ def main():
                 diff = '{:.2f}'.format(current - close)
 
             elif close is None:
-                logging.info('Value returned None')
+                logging.info('Value returned None. Sleeping for %s', \
+                str(poll_time).split('.')[0])
                 time.sleep(poll_time)
                 stamp = datetime.now().strftime('%H:%M')
 
@@ -89,29 +90,33 @@ def main():
                         msgup.format(int(current), diff, per, int(close)),\
                         'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
-                        logging.info('Increased')
+                        logging.info('Increased. Sleeping for %s', \
+                        str(sleep_time).split('.')[0])
                         time.sleep(sleep_time)
                     elif ((close) - usd) >= (current):
                         payload = {'chat_id': chat_id, 'text':\
                         msg.format(int(current), diff, per, int(close)),\
                         'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
-                        logging.info('Decreased')
+                        logging.info('Decreased. Sleeping for %s', \
+                        str(sleep_time).split('.')[0])
                         time.sleep(sleep_time)
                     else:
-                        logging.info('Not enough change')
+                        logging.info('Not enough change. Sleeping for %s', \
+                        str(poll_time).split('.')[0])
                         time.sleep(poll_time)
                 else:
-                    logging.info('HTTP response code')
-                    logging.info(r.status_code)
+                    logging.info('HTTP response code (%s) is not OK. \
+                    Sleeping for %s', r.status_code, \
+                    str(poll_time).split('.')[0])
                     time.sleep(poll_time)
             else:
                 logging.info('Market closed. Sleeping for %s', \
                 str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
     else:
-        logging.info('IEX symbol is not correct or')
-        logging.info('HTTP response code %s is not OK', r.status_code)
+        logging.info('Ticker (%s) does not match any IEX symbol or', ticker)
+        logging.info('HTTP response code (%s) is not OK. Retry', r.status_code)
 
 if __name__ == "__main__":
     main()
