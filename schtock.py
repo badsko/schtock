@@ -84,7 +84,7 @@ def main():
                 time.sleep(poll_time)
                 stamp = datetime.now().strftime('%H:%M')
 
-            if tt and date and isopen:
+            if tt and date: 
                 if r.status_code == 200:
                     if ((close) + usd) <= (current):
                         payload = {'chat_id': chat_id, 'text':\
