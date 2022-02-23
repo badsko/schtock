@@ -42,10 +42,10 @@ def main():
             isopen = g_dict['isUSMarketOpen']
             stamp = datetime.now().strftime('%H:%M')
             date = datetime.today().isoweekday() < 6
-            tt = stamp > '15:30' and stamp < '22:00'
+            tt = stamp > '15:31' and stamp < '22:00'
             after = stamp > '22:00' and stamp < '24:00'
             now = datetime.now()
-            target = datetime(now.year, now.month, now.day, hour=15, minute=30)
+            target = datetime(now.year, now.month, now.day, hour=15, minute=31)
             delta = target - now
             ah = datetime(now.year, now.month, now.day, \
             hour=23, minute=54, second=59)
