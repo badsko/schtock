@@ -21,6 +21,7 @@ def main():
     sleep_time = 60*55
     url = f'https://cloud.iexapis.com/stable/stock/{ticker}/quote'
     telegram = f'https://api.telegram.org/bot{token}/sendMessage'
+    pin = f'https://api.telegram.org/bot{token}/pinChatMessage'
     r = requests.get('https://cloud.iexapis.com/stable/status', timeout=3)
     sy = requests.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
     timeout=3, params=payload)
@@ -84,13 +85,17 @@ def main():
                 time.sleep(poll_time)
                 stamp = datetime.now().strftime('%H:%M')
 
-            if tt and date: 
+            if tt and date:
                 if r.status_code == 200:
                     if ((close) + usd) <= (current):
                         payload = {'chat_id': chat_id, 'text':\
                         msgup.format(int(current), diff, per, int(close)),\
                         'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
+                        resp = r.json()
+                        mid = resp['result']['message_id']
+                        payload = {'chat_id': chat_id, 'message_id': mid}
+                        r = requests.post(pin, params=payload)
                         logging.info('Increased. Sleeping for %s', \
                         str(sleep_time).split('.')[0])
                         time.sleep(sleep_time)
@@ -99,6 +104,10 @@ def main():
                         msg.format(int(current), diff, per, int(close)),\
                         'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
+                        resp = r.json()
+                        mid = resp['result']['message_id']
+                        payload = {'chat_id': chat_id, 'message_id': mid}
+                        r = requests.post(pin, params=payload)
                         logging.info('Decreased. Sleeping for %s', \
                         str(sleep_time).split('.')[0])
                         time.sleep(sleep_time)
@@ -121,3 +130,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
