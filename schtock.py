@@ -22,6 +22,7 @@ def main():
     url = f'https://cloud.iexapis.com/stable/stock/{ticker}/quote'
     telegram = f'https://api.telegram.org/bot{token}/sendMessage'
     pin = f'https://api.telegram.org/bot{token}/pinChatMessage'
+    unpin = f'https://api.telegram.org/bot{token}/unpinAllChatMessages'
     r = requests.get('https://cloud.iexapis.com/stable/status', timeout=3)
     sy = requests.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
     timeout=3, params=payload)
@@ -49,7 +50,7 @@ def main():
             target = datetime(now.year, now.month, now.day, hour=15, minute=31)
             delta = target - now
             ah = datetime(now.year, now.month, now.day, \
-            hour=23, minute=54, second=59)
+            hour=0, minute=0, second=1)
             deltaAfter = ah - now
 
             if not tt and not date:
@@ -67,6 +68,9 @@ def main():
                 time.sleep(delta.total_seconds())
                 logging.info('Market open')
                 stamp = datetime.now().strftime('%H:%M')
+                payload = {'chat_id': chat_id}
+                r = requests.post(unpin, params=payload)
+                logging.info('Unpin everything')
 
             if after and deltaAfter > timedelta(0):
                 logging.info('After hours. Sleeping for %s', \
