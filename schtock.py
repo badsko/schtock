@@ -36,7 +36,7 @@ def main():
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:    
+    if ticker and r.status_code == 200:    
         while True:
             payload = {'token': iex}
             g = requests.get(url, timeout=3, params=payload)
@@ -55,6 +55,7 @@ def main():
             ah = datetime(now.year, now.month, now.day, \
             hour=0, minute=0, second=1)
             deltaAfter = ah - now
+            dis = True
 
             if not tt and not date:
                 weekend = now + timedelta(days=2)
@@ -92,7 +93,7 @@ def main():
                 time.sleep(poll_time)
                 stamp = datetime.now().strftime('%H:%M')
 
-            if tt and date:
+            if tt and date and isopen:
                 if r.status_code == 200:
                     if ((close) + usd) <= (current):
                         payload = {'chat_id': chat_id, 'text':\
@@ -101,7 +102,8 @@ def main():
                         r = requests.post(telegram, params=payload)
                         resp = r.json()
                         mid = resp['result']['message_id']
-                        payload = {'chat_id': chat_id, 'message_id': mid}
+                        payload = {'chat_id': chat_id, 'message_id': mid, \
+                        'disable_notification': dis}
                         r = requests.post(pin, params=payload)
                         logging.info('Increased. Sleeping for %s', \
                         str(sleep_time).split('.')[0])
@@ -114,7 +116,8 @@ def main():
                         r = requests.post(telegram, params=payload)
                         resp = r.json()
                         mid = resp['result']['message_id']
-                        payload = {'chat_id': chat_id, 'message_id': mid}
+                        payload = {'chat_id': chat_id, 'message_id': mid, \
+                        'disable_notification': dis}
                         r = requests.post(pin, params=payload)
                         logging.info('Decreased. Sleeping for %s', \
                         str(sleep_time).split('.')[0])
