@@ -36,7 +36,7 @@ def main():
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    if ticker and r.status_code == 200:    
+    if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:
         while True:
             payload = {'token': iex}
             g = requests.get(url, timeout=3, params=payload)
