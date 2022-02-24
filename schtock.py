@@ -53,7 +53,7 @@ def main():
             target = datetime(now.year, now.month, now.day, hour=15, minute=31)
             delta = target - now
             ah = datetime(now.year, now.month, now.day, \
-            hour=0, minute=0, second=1)
+            hour=23, minute=59, second=59)
             deltaAfter = ah - now
             dis = True
 
