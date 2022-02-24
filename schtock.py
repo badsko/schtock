@@ -27,8 +27,10 @@ def main():
     sy = requests.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
     timeout=3, params=payload)
     sy_list = sy.json()
-    msg = ticker + ' at `${}` `{}` `({})` from previous close at `${}`.'
-    msgup = ticker + ' at `${}` `+{}` `(+{})` from previous close at `${}`.'
+    msg = ticker + \
+    ' at `${}` `{}` `({})` from previous close at `${}`. Opened at `${}`.'
+    msgup = ticker + \
+    ' at `${}` `+{}` `(+{})` from previous close at `${}`. Opened at `${}`.'
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
         level=logging.INFO,
@@ -42,6 +44,7 @@ def main():
             current = g_dict['latestPrice']
             close = g_dict['previousClose']
             isopen = g_dict['isUSMarketOpen']
+            openp = g_dict['iexOpen']
             stamp = datetime.now().strftime('%H:%M')
             date = datetime.today().isoweekday() < 6
             tt = stamp > '15:31' and stamp < '22:00'
@@ -93,8 +96,8 @@ def main():
                 if r.status_code == 200:
                     if ((close) + usd) <= (current):
                         payload = {'chat_id': chat_id, 'text':\
-                        msgup.format(int(current), diff, per, int(close)),\
-                        'parse_mode': 'markdown'}
+                        msgup.format(int(current), diff, per, int(close), \
+                        int(openp)), 'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
                         resp = r.json()
                         mid = resp['result']['message_id']
@@ -105,7 +108,8 @@ def main():
                         time.sleep(sleep_time)
                     elif ((close) - usd) >= (current):
                         payload = {'chat_id': chat_id, 'text':\
-                        msg.format(int(current), diff, per, int(close)),\
+                        msg.format(int(current), diff, per, int(close), \
+                        int(openp)),
                         'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
                         resp = r.json()
