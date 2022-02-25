@@ -1,9 +1,8 @@
 FROM python:3.9.10-slim-buster
 
-COPY schtock.py requirements.txt .env /
-RUN apt-get -y update
-RUN apt-get -y upgrade
-RUN pip3 install --upgrade pip
-RUN pip3 install -r requirements.txt
+WORKDIR /data
+COPY requirements.txt .env /data/
+RUN apt-get update && apt-get upgrade -y
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
 ENTRYPOINT [ "python", "-u", "./schtock.py" ]
