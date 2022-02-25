@@ -64,7 +64,7 @@ def main():
             g_dict = g.json()
             current = g_dict['latestPrice']
             close = g_dict['previousClose']
-            isopen = False
+            isopen = g_dict['isUSMarketOpen']
             openp = g_dict['iexOpen']
             stamp = datetime.now().strftime('%H:%M')
             date = datetime.today().isoweekday() < 6
