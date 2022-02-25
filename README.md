@@ -9,7 +9,8 @@ Grab your Token from @BotFather.
 Find your Chat ID (e.g., by inviting @RawDataBot to your channel).
 
 ## IEX
-Register for a free token.
+Register for a free token below.
+
 [https://iexcloud.io/cloud-login#/register](https://iexcloud.io/cloud-login#/register)
 
 ## Modify `.env`
@@ -34,6 +35,7 @@ IEX=123
 Script assumes open hours to be in CET.
 
 Ticker must be valid. See a list of eligble symbols below.
+
 [https://iextrading.com/trading/eligible-symbols/](https://iextrading.com/trading/eligible-symbols/)
 
 ## Example
