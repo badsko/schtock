@@ -77,6 +77,7 @@ def main():
                 logging.info('Unpin everything')
 
             if after and deltaAfter > timedelta(0):
+                deltaAfter = deltaAfter + timedelta(seconds=2)
                 logging.info('After hours. Sleeping for %s', \
                 str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
