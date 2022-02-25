@@ -36,6 +36,27 @@ def main():
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
 
+    def check_open():
+        # Check if market is open. If not, try three times.
+        # Return True or False.
+        r = requests.get(url, timeout=3, params=payload)
+        r_dict = r.json()
+        p_time = 60*5
+        opened = r_dict['isUSMarketOpen']
+        if opened:
+            return True
+        else:
+            for i in range(3):
+                r = requests.get(url, timeout=3, params=payload)
+                r_dict = r.json()
+                opened = r_dict['isUSMarketOpen']
+                logging.info('Checking if market is open. Sleep %ss', \
+                str(p_time))
+                time.sleep(p_time)
+                if opened:
+                    return True
+            return False
+
     if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:
         while True:
             payload = {'token': iex}
@@ -43,7 +64,7 @@ def main():
             g_dict = g.json()
             current = g_dict['latestPrice']
             close = g_dict['previousClose']
-            isopen = g_dict['isUSMarketOpen']
+            isopen = False
             openp = g_dict['iexOpen']
             stamp = datetime.now().strftime('%H:%M')
             date = datetime.today().isoweekday() < 6
@@ -88,9 +109,16 @@ def main():
                 per = '{:.2%}'.format((current - close) / close)
                 diff = '{:.2f}'.format(current - close)
 
+            if not isopen:
+                isopen = check_open()
+                if isopen:
+                    logging.info('US Market open.')
+                else:
+                    logging.info('US Market closed.')
+
             elif close is None:
-                logging.info('Value returned None. Sleeping for %s', \
-                str(poll_time).split('.')[0])
+                logging.info('Value returned None. Sleeping for %ss', \
+                str(poll_time))
                 time.sleep(poll_time)
                 stamp = datetime.now().strftime('%H:%M')
 
@@ -106,8 +134,8 @@ def main():
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Increased. Sleeping for %s', \
-                        str(sleep_time).split('.')[0])
+                        logging.info('Increased. Sleeping for %ss', \
+                        str(sleep_time))
                         time.sleep(sleep_time)
                     elif ((close) - usd) >= (current):
                         payload = {'chat_id': chat_id, 'text':\
@@ -120,19 +148,20 @@ def main():
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Decreased. Sleeping for %s', \
-                        str(sleep_time).split('.')[0])
+                        logging.info('Decreased. Sleeping for %ss', \
+                        str(sleep_time))
                         time.sleep(sleep_time)
                     else:
-                        logging.info('Not enough change. Sleeping for %s', \
-                        str(poll_time).split('.')[0])
+                        logging.info('Not enough change. Sleeping for %ss', \
+                        str(poll_time))
                         time.sleep(poll_time)
                 else:
                     logging.info('HTTP response code (%s) is not OK. \
-                    Sleeping for %s', r.status_code, \
-                    str(poll_time).split('.')[0])
+                    Sleeping for %ss', r.status_code, \
+                    str(poll_time))
                     time.sleep(poll_time)
             else:
+                deltaAfter = deltaAfter + timedelta(seconds=2)
                 logging.info('Market closed. Sleeping for %s', \
                 str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
