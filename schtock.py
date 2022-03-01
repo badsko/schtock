@@ -68,8 +68,8 @@ def main():
             openp = g_dict['iexOpen']
             stamp = datetime.now().strftime('%H:%M')
             date = datetime.today().isoweekday() < 6
-            tt = stamp > '15:31' and stamp < '22:00'
-            after = stamp > '22:00' and stamp < '24:00'
+            tt = stamp >= '15:31' and stamp <= '22:00'
+            after = stamp >= '22:00' and stamp <= '24:00'
             now = datetime.now()
             target = datetime(now.year, now.month, now.day, hour=15, minute=31)
             delta = target - now
@@ -96,6 +96,7 @@ def main():
                 payl = {'chat_id': chat_id}
                 rd = requests.post(unpin, params=payl)
                 logging.info('Unpin everything')
+                tt = stamp >= '15:31' and stamp <= '22:00'
 
             if after and deltaAfter > timedelta(0):
                 deltaAfter = deltaAfter + timedelta(seconds=2)
