@@ -50,8 +50,8 @@ def main():
                 r = requests.get(url, timeout=3, params=payload)
                 r_dict = r.json()
                 opened = r_dict['isUSMarketOpen']
-                logging.info('Checking if market is open. Sleep %ss', \
-                str(p_time))
+                logging.info('Checking if market is open. Sleep %ds', \
+                p_time)
                 time.sleep(p_time)
                 if opened:
                     return True
@@ -117,8 +117,8 @@ def main():
                     logging.info('US Market closed.')
 
             elif close is None:
-                logging.info('Value returned None. Sleeping for %ss', \
-                str(poll_time))
+                logging.info('Value returned None. Sleeping for %ds', \
+                poll_time)
                 time.sleep(poll_time)
                 stamp = datetime.now().strftime('%H:%M')
 
@@ -134,8 +134,7 @@ def main():
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Increased. Sleeping for %ss', \
-                        str(sleep_time))
+                        logging.info('Increased. Sleeping for %ds', sleep_time)
                         time.sleep(sleep_time)
                     elif ((close) - usd) >= (current):
                         payload = {'chat_id': chat_id, 'text':\
@@ -148,17 +147,15 @@ def main():
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Decreased. Sleeping for %ss', \
-                        str(sleep_time))
+                        logging.info('Decreased. Sleeping for %ds', sleep_time)
                         time.sleep(sleep_time)
                     else:
-                        logging.info('Not enough change. Sleeping for %ss', \
-                        str(poll_time))
+                        logging.info('Not enough change. Sleeping for %ds', \
+                        poll_time)
                         time.sleep(poll_time)
                 else:
                     logging.info('HTTP response code (%s) is not OK. \
-                    Sleeping for %ss', r.status_code, \
-                    str(poll_time))
+                    Sleeping for %ds', r.status_code, poll_time)
                     time.sleep(poll_time)
             else:
                 deltaAfter = deltaAfter + timedelta(seconds=2)
