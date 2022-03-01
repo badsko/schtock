@@ -93,8 +93,8 @@ def main():
                 time.sleep(delta.total_seconds())
                 logging.info('Market open')
                 stamp = datetime.now().strftime('%H:%M')
-                payload = {'chat_id': chat_id}
-                r = requests.post(unpin, params=payload)
+                payl = {'chat_id': chat_id}
+                rd = requests.post(unpin, params=payl)
                 logging.info('Unpin everything')
 
             if after and deltaAfter > timedelta(0):
