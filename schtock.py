@@ -127,8 +127,8 @@ def main():
                 if r.status_code == 200:
                     if ((close) + usd) <= (current):
                         payload = {'chat_id': chat_id, 'text':\
-                        msgup.format(int(current), diff, per, int(close), \
-                        int(openp)), 'parse_mode': 'markdown'}
+                        msgup.format(current, diff, per, close, \
+                        openp), 'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
                         resp = r.json()
                         mid = resp['result']['message_id']
@@ -139,8 +139,8 @@ def main():
                         time.sleep(sleep_time)
                     elif ((close) - usd) >= (current):
                         payload = {'chat_id': chat_id, 'text':\
-                        msg.format(int(current), diff, per, int(close), \
-                        int(openp)),
+                        msg.format(current, diff, per, close, \
+                        openp),
                         'parse_mode': 'markdown'}
                         r = requests.post(telegram, params=payload)
                         resp = r.json()
