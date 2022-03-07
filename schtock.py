@@ -86,6 +86,7 @@ def main():
                 time.sleep(dwknd.total_seconds())
                 logging.info('Weekday')
                 stamp = datetime.now().strftime('%H:%M')
+                now = datetime.now()
 
             if delta > timedelta(0):
                 logging.info('Market closed. Sleeping for %s', \
