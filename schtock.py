@@ -36,6 +36,12 @@ def main():
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
 
+    def check_price():
+        payload = {'token': iex}
+        r = requests.get(url, timeout=3, params=payload)
+        r_dict = r.json()
+        return r_dict
+
     def check_open():
         # Check if market is open. If not, try three times.
         # Return True or False.
@@ -59,9 +65,7 @@ def main():
 
     if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:
         while True:
-            payload = {'token': iex}
-            g = requests.get(url, timeout=3, params=payload)
-            g_dict = g.json()
+            g_dict = check_price()
             current = g_dict['latestPrice']
             close = g_dict['previousClose']
             isopen = g_dict['isUSMarketOpen']
@@ -93,11 +97,10 @@ def main():
                 str(delta).split('.')[0])
                 time.sleep(delta.total_seconds())
                 logging.info('Market open')
-                stamp = datetime.now().strftime('%H:%M')
                 payl = {'chat_id': chat_id}
-                rd = requests.post(unpin, params=payl)
+                rd = requests.post(unpin, timeout=3, params=payl)
                 logging.info('Unpin everything')
-                tt = stamp >= '15:31' and stamp <= '22:00'
+                tt = False
 
             if after and deltaAfter > timedelta(0):
                 deltaAfter = deltaAfter + timedelta(seconds=2)
@@ -119,13 +122,13 @@ def main():
                     logging.info('US Market closed.')
 
             elif close is None:
-                logging.info('Value returned None. Sleeping for %ds', \
+                logging.info('Value returned None. Sleeping for %d s', \
                 poll_time)
                 time.sleep(poll_time)
                 stamp = datetime.now().strftime('%H:%M')
 
-            if tt and date and isopen:
-                if r.status_code == 200:
+            if date and isopen:
+                if tt and r.status_code == 200:
                     if ((close) + usd) <= (current):
                         payload = {'chat_id': chat_id, 'text':\
                         msgup.format(current, diff, per, close, \
@@ -136,7 +139,7 @@ def main():
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Increased. Sleeping for %ds', sleep_time)
+                        logging.info('Increased. Sleeping for %d s', sleep_time)
                         time.sleep(sleep_time)
                     elif ((close) - usd) >= (current):
                         payload = {'chat_id': chat_id, 'text':\
@@ -149,15 +152,16 @@ def main():
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Decreased. Sleeping for %ds', sleep_time)
+                        logging.info('Decreased. Sleeping for %d s', sleep_time)
                         time.sleep(sleep_time)
                     else:
-                        logging.info('Not enough change. Sleeping for %ds', \
+                        logging.info('Not enough change. Sleeping for %d s', \
                         poll_time)
                         time.sleep(poll_time)
                 else:
-                    logging.info('HTTP response code (%s) is not OK. \
-                    Sleeping for %ds', r.status_code, poll_time)
+                    logging.info('HTTP response code (%s). Sleeping for %d s', \
+                    r.status_code, poll_time)
+                    logging.info('OR tt (target time) is False')
                     time.sleep(poll_time)
             else:
                 deltaAfter = deltaAfter + timedelta(seconds=2)
