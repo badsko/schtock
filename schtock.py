@@ -45,6 +45,7 @@ def main():
     def check_open():
         # Check if market is open. If not, try three times.
         # Return True or False.
+        payload = {'token': iex}
         r = requests.get(url, timeout=3, params=payload)
         r_dict = r.json()
         p_time = 60*5
