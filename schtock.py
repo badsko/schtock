@@ -160,9 +160,9 @@ def main():
                         poll_time)
                         time.sleep(poll_time)
                 else:
-                    logging.info('HTTP response code (%s). Sleeping for %d s', \
-                    r.status_code, poll_time)
-                    logging.info('OR tt (target time) is False')
+                    logging.info('HTTP response code (%s) OR tt False.', \
+                    r.status_code)
+                    logging.info('Sleeping for %d s', poll_time)
                     time.sleep(poll_time)
             else:
                 deltaAfter = deltaAfter + timedelta(seconds=2)
