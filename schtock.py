@@ -73,10 +73,10 @@ def main():
             openp = g_dict['iexOpen']
             stamp = datetime.now().strftime('%H:%M')
             date = datetime.today().isoweekday() < 6
-            tt = stamp >= '15:31' and stamp <= '22:00'
+            tt = stamp >= '14:31' and stamp <= '22:00'
             after = stamp >= '22:00' and stamp <= '24:00'
             now = datetime.now()
-            target = datetime(now.year, now.month, now.day, hour=15, minute=31)
+            target = datetime(now.year, now.month, now.day, hour=14, minute=31)
             delta = target - now
             ah = datetime(now.year, now.month, now.day, \
             hour=23, minute=59, second=59)
