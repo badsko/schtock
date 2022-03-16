@@ -57,7 +57,7 @@ def main():
                 r = requests.get(url, timeout=3, params=payload)
                 r_dict = r.json()
                 opened = r_dict['isUSMarketOpen']
-                logging.info('Checking if market is open. Sleep %ds', \
+                logging.info('Checking if market is open. Sleep %d s', \
                 p_time)
                 time.sleep(p_time)
                 if opened:
@@ -118,9 +118,9 @@ def main():
             if not isopen:
                 isopen = check_open()
                 if isopen:
-                    logging.info('US Market open.')
+                    logging.info('US Market open')
                 else:
-                    logging.info('US Market closed.')
+                    logging.info('US Market closed')
 
             elif close is None:
                 logging.info('Value returned None. Sleeping for %d s', \
