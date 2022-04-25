@@ -164,9 +164,9 @@ def main():
                     r.status_code)
                     logging.info('Sleeping for %d s', poll_time)
                     time.sleep(poll_time)
-            else:
+            elif after:
                 deltaAfter = deltaAfter + timedelta(seconds=2)
-                logging.info('Market closed. Sleeping for %s', \
+                logging.info('Market closed... Sleeping for %s', \
                 str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
     else:
