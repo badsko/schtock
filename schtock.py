@@ -9,7 +9,29 @@ from pprint import pprint
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 
+def check_open(url, s, payload):
+    # Check if market is open. If not, try three times.
+    # Return True or False.
+    r = s.get(url, timeout=3, params=payload)
+    r_dict = r.json()
+    p_time = 60*5
+    opened = r_dict['isUSMarketOpen']
+    if opened:
+        return True
+    else:
+        for i in range(3):
+            r = s.get(url, timeout=3, params=payload)
+            r_dict = r.json()
+            opened = r_dict['isUSMarketOpen']
+            logging.info('Checking if market is open. Sleep %ds', \
+            p_time)
+            time.sleep(p_time)
+            if opened:
+                return True
+        return False
+
 def main():
+    s = requests.Session()
     ticker = str(sys.argv[1])
     usd = float(sys.argv[2]) # USD stock price increase or decrease
     load_dotenv()
@@ -23,8 +45,8 @@ def main():
     telegram = f'https://api.telegram.org/bot{token}/sendMessage'
     pin = f'https://api.telegram.org/bot{token}/pinChatMessage'
     unpin = f'https://api.telegram.org/bot{token}/unpinAllChatMessages'
-    r = requests.get('https://cloud.iexapis.com/stable/status', timeout=3)
-    sy = requests.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
+    r = s.get('https://cloud.iexapis.com/stable/status', timeout=3)
+    sy = s.get('https://cloud.iexapis.com/stable/ref-data/iex/symbols', \
     timeout=3, params=payload)
     sy_list = sy.json()
     msg = ticker + \
@@ -36,16 +58,9 @@ def main():
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    def check_price():
-        payload = {'token': iex}
-        r = requests.get(url, timeout=3, params=payload)
-        r_dict = r.json()
-        return r_dict
-
     def check_open():
         # Check if market is open. If not, try three times.
         # Return True or False.
-        payload = {'token': iex}
         r = requests.get(url, timeout=3, params=payload)
         r_dict = r.json()
         p_time = 60*5
@@ -57,7 +72,7 @@ def main():
                 r = requests.get(url, timeout=3, params=payload)
                 r_dict = r.json()
                 opened = r_dict['isUSMarketOpen']
-                logging.info('Checking if market is open. Sleep %d s', \
+                logging.info('Checking if market is open. Sleep %ds', \
                 p_time)
                 time.sleep(p_time)
                 if opened:
@@ -66,7 +81,9 @@ def main():
 
     if ticker in [d['symbol'] for d in sy_list] and r.status_code == 200:
         while True:
-            g_dict = check_price()
+            payload = {'token': iex}
+            g = requests.get(url, timeout=3, params=payload)
+            g_dict = g.json()
             current = g_dict['latestPrice']
             close = g_dict['previousClose']
             isopen = g_dict['isUSMarketOpen']
@@ -99,7 +116,7 @@ def main():
                 time.sleep(delta.total_seconds())
                 logging.info('Market open')
                 payl = {'chat_id': chat_id}
-                rd = requests.post(unpin, timeout=3, params=payl)
+                rd = s.post(unpin, params=payl)
                 logging.info('Unpin everything')
                 tt = False
 
@@ -116,7 +133,7 @@ def main():
                 diff = '{:.2f}'.format(current - close)
 
             if not isopen:
-                isopen = check_open()
+                isopen = check_open(url, s, payload)
                 if isopen:
                     logging.info('US Market open')
                 else:
@@ -131,42 +148,55 @@ def main():
             if date and isopen:
                 if tt and r.status_code == 200:
                     if ((close) + usd) <= (current):
-                        payload = {'chat_id': chat_id, 'text':\
-                        msgup.format(current, diff, per, close, \
-                        openp), 'parse_mode': 'markdown'}
-                        r = requests.post(telegram, params=payload)
+                        payload = {
+                            'chat_id': chat_id, 
+                            'text': msgup.format(
+                                current, 
+                                diff, 
+                                per, 
+                                close, 
+                                openp
+                                ), 
+                            'parse_mode': 'markdown'
+                            }
+                        r = s.post(telegram, params = payload)
                         resp = r.json()
                         mid = resp['result']['message_id']
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Increased. Sleeping for %d s', sleep_time)
+                        logging.info('Increased. Sleeping for %ds', sleep_time)
                         time.sleep(sleep_time)
                     elif ((close) - usd) >= (current):
-                        payload = {'chat_id': chat_id, 'text':\
-                        msg.format(current, diff, per, close, \
-                        openp),
-                        'parse_mode': 'markdown'}
-                        r = requests.post(telegram, params=payload)
+                        payload = {
+                            'chat_id': chat_id, 
+                            'text': msg.format(
+                                current, 
+                                diff, 
+                                per, 
+                                close, 
+                                openp),
+                            'parse_mode': 'markdown'
+                            }
+                        r = s.post(telegram, params = payload)
                         resp = r.json()
                         mid = resp['result']['message_id']
                         payload = {'chat_id': chat_id, 'message_id': mid, \
                         'disable_notification': dis}
                         r = requests.post(pin, params=payload)
-                        logging.info('Decreased. Sleeping for %d s', sleep_time)
+                        logging.info('Decreased. Sleeping for %ds', sleep_time)
                         time.sleep(sleep_time)
                     else:
-                        logging.info('Not enough change. Sleeping for %d s', \
+                        logging.info('Not enough change. Sleeping for %ds', \
                         poll_time)
                         time.sleep(poll_time)
                 else:
-                    logging.info('HTTP response code (%s) OR tt False.', \
-                    r.status_code)
-                    logging.info('Sleeping for %d s', poll_time)
+                    logging.info('HTTP response code (%s) is not OK. \
+                    Sleeping for %ds', r.status_code, poll_time)
                     time.sleep(poll_time)
             elif after:
                 deltaAfter = deltaAfter + timedelta(seconds=2)
-                logging.info('Market closed... Sleeping for %s', \
+                logging.info('Market closed. Sleeping for %s', \
                 str(deltaAfter).split('.')[0])
                 time.sleep(deltaAfter.total_seconds())
     else:
